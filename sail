@@ -1,0 +1,1 @@
+[ -f vendor/bin/sail ] && bash vendor/bin/sail "$@"
