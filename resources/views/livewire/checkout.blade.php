@@ -2,36 +2,73 @@
     <h1 class="text-2xl font-bold mb-6">Checkout</h1>
 
     @if (session()->has('error'))
-        <div class="text-red-500 mb-4">{{ session('error') }}</div>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
     @endif
 
-    @if (session()->has('success'))
-        <div class="text-green-500 mb-4">{{ session('success') }}</div>
-    @endif
+    <div class="space-y-4">
+        <!-- Shipping Address -->
+        <div>
+            <label for="shipping" class="block font-medium mb-1">Адрес за доставка*</label>
+            <input type="text" id="shipping" wire:model="shippingAddress"
+                   class="w-full border rounded px-3 py-2">
+            @error('shippingAddress') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
 
-    <div class="mb-4">
-    <label for="shipping" class="block font-medium">Shipping Address</label>
-    <input type="text" id="shipping" wire:model="shippingAddress"
-           class="w-full border rounded px-3 py-2 mt-1" required>
-</div>
+        <!-- Phone Number -->
+        <div>
+            <label for="phone" class="block font-medium mb-1">Телефонен номер*</label>
+            <input type="tel" id="phone" wire:model="phoneNumber"
+                   class="w-full border rounded px-3 py-2">
+            @error('phoneNumber') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
 
-    <ul class="divide-y mb-6">
-        @foreach ($cart as $item)
-            <li class="py-4 flex justify-between">
-                <div>
-                    <strong>{{ $item['name'] }}</strong> ({{ $item['size_name'] }})<br>
-                    Qty: {{ $item['quantity'] }}
-                </div>
-                <div>${{ number_format($item['price'] * $item['quantity'], 2) }}</div>
-            </li>
-        @endforeach
-    </ul>
+        <!-- Delivery Option -->
+        <div>
+            <label class="block font-medium mb-1">Начин на доставка*</label>
+            <div class="flex space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" wire:model="deliveryOption" value="econt" class="mr-2">
+                    <span>Еконт</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" wire:model="deliveryOption" value="speedy" class="mr-2">
+                    <span>Спиди</span>
+                </label>
+            </div>
+            @error('deliveryOption') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
+    </div>
 
-    <div class="text-right">
-        <p class="text-xl font-semibold mb-3">Total: ${{ number_format($total, 2) }}</p>
-        <button wire:click="placeOrder"
-                class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition">
-            Place Order
-        </button>
+    <!-- Order Summary -->
+    <div class="mt-8 border-t pt-4">
+        <h2 class="text-lg font-semibold mb-4">Обобщение на поръчката</h2>
+        <ul class="divide-y">
+            @foreach ($cart as $item)
+                <li class="py-3 flex justify-between border-black border-t-2 border-b-2">
+                    <div class="">
+                        <strong>{{ $item['name'] }}</strong> ({{ $item['size_name'] }})
+                        <span class="block text-sm">Количество: {{ $item['quantity'] }}</span>
+                    </div>
+                    <div>${{ number_format($item['price'] * $item['quantity'], 2) }}</div>
+                </li>
+            @endforeach
+        </ul>
+
+        <div x-data="{ loading: false }" class="mt-4 text-right">
+            <p class="text-xl font-semibold">Общо: ${{ number_format($total, 2) }}</p>
+            <button
+                x-on:click="loading = true"
+                wire:click="placeOrder"
+                wire:loading.attr="disabled"
+                class="mt-4 bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
+                x-bind:disabled="loading">
+                <span x-show="!loading">Поръчай</span>
+                <span x-show="loading">
+                    Зарежда се...
+                </span>
+            </button>
+        </div>
     </div>
 </div>

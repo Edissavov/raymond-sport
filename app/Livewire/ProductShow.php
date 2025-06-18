@@ -10,11 +10,14 @@ class ProductShow extends Component
     public Product $product;
     public $errorMessage = null;
 
+    public $showCartNotification = false;
     public $selectedSizeId = null;
 
     public function mount($slug)
     {
-        $this->product = Product::with(['category', 'productSizes.size', 'media'])->where('slug', $slug)->firstOrFail();
+        $this->product = Product::with(['category', 'productSizes.size', 'media'])
+            ->where('slug', $slug)
+            ->firstOrFail();
     }
 
     public function selectSize($sizeId)
@@ -25,6 +28,7 @@ class ProductShow extends Component
             $this->selectedSizeId = $sizeId;
         }
     }
+
     public function addToCart()
     {
         if (is_null($this->selectedSizeId)) {
@@ -33,7 +37,6 @@ class ProductShow extends Component
         }
 
         $this->errorMessage = null;
-
 
         $cart = session()->get('cart', []);
 
@@ -55,13 +58,11 @@ class ProductShow extends Component
         }
 
         session()->put('cart', $cart);
-
-        // Optional: Show flash message or emit event
         session()->flash('success', 'Added to cart!');
-
-        // Add to cart logic here
+        $this->showCartNotification = true;
+        $this->dispatch('cartUpdated');
+        $this->dispatch('notify', duration: 3000);
     }
-
 
     public function render()
     {

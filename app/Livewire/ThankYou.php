@@ -6,14 +6,24 @@ use Livewire\Component;
 
 class ThankYou extends Component
 {
-    public $orderInfo;
-    public function mount(){
-        $this->orderInfo = session()->get('order', []);
-        session()->forget(keys: 'order');
+    public $order;
+
+    public function mount()
+    {
+        $this->order = session()->get('order');
+
+        if (!$this->order) {
+            return redirect()->route('home');
+        }
+
+        // Clear the order from session after displaying
+        session()->forget('order');
     }
 
     public function render()
     {
-        return view('livewire.thank-you');
+        return view('livewire.thank-you', [
+            'order' => $this->order
+        ]);
     }
 }

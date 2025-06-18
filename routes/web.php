@@ -14,8 +14,10 @@ use App\Livewire\ThankYou;
 
 Route::get('/', Home::class)->name('home');
 Route::get('/products', Products::class)->name('products');
+Route::get('/products/category/{category:slug}', Products::class)->name('products.category');
 Route::get('/product/{slug}', ProductShow::class)->name('product-show');
 Route::get('/cart', Cart::class)->name('cart');
 Route::get('/checkout', Checkout::class)->name('checkout')->middleware(CanAccessCheckOut::class);
-Route::get('/thank-you', ThankYou::class)
-->middleware(CanAccessThanksPage::class)->name('thank-you');
+// Route::get('/thank-you', ThankYou::class)
+// ->middleware(CanAccessThanksPage::class)->name('thank-you');
+Route::get('/thank-you', ThankYou::class)->name('thank-you');

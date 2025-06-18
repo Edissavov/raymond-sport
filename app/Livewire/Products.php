@@ -8,32 +8,34 @@ use Livewire\Component;
 
 class Products extends Component
 {
-    public $categories;
-    public $selectedCategory = null;
-    public $products;
 
-    public function mount()
+    public $categories;
+    public $products;
+    public $currentCategorySlug = null;
+
+    public function mount($category = null)
     {
         $this->categories = Category::all();
+        $this->currentCategorySlug = $category instanceof \App\Models\Category
+            ? $category->slug
+            : $category;
+
         $this->loadProducts();
     }
 
-    public function updatedSelectedCategory()
+    protected function loadProducts()
     {
-        $this->loadProducts();
+        $this->products = Product::query()
+            ->with(['images', 'category'])
+            ->when($this->currentCategorySlug, function($query) {
+                $query->whereHas('category', function($q) {
+                    $q->where('slug', $this->currentCategorySlug);
+                });
+            })
+            ->latest()
+            ->get();
     }
 
-    public function loadProducts()
-    {
-        $query = Product::with('images');
-
-        if ($this->selectedCategory) {
-            $query->where('category_id', $this->selectedCategory);
-        }
-
-        $this->products = $query->latest()->get();
-    }
-  
     public function render()
     {
         return view('livewire.products');

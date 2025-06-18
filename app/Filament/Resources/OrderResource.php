@@ -7,6 +7,9 @@ use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Filament\Resources\OrderResource\RelationManagers\ItemsRelationManager;
 use App\Models\Order;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -37,6 +40,22 @@ class OrderResource extends Resource
                 Forms\Components\Textarea::make('shipping_address')
                     ->required()
                     ->columnSpanFull(),
+                TextInput::make('phone_number')
+                    ->required()
+                    ->tel() // Special phone input type
+                    ->maxLength(20),
+
+                Radio::make('delivery_option')
+                    ->required()
+                    ->options([
+                        'econt' => 'Econt',
+                        'speedy' => 'Speedy'
+                    ])
+                    ->default('econt')
+                   ,
+
+
+
             ]);
     }
 
