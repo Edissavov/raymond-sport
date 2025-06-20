@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('delivery_option')->after('shipping_address');
-            $table->string('phone_number')->after('delivery_option');
-            $table->text('notes')->nullable()->after('phone_number');
-            $table->string('payment_method')->default('cash_on_delivery')->after('notes');
+            if (!Schema::hasColumn('orders', 'delivery_option')) {
+                $table->string('delivery_option')->after('shipping_address');
+            }
+            if (!Schema::hasColumn('orders', 'phone_number')) {
+                $table->string('phone_number')->after('delivery_option');
+            }
+            if (!Schema::hasColumn('orders', 'notes')) {
+                $table->text('notes')->nullable()->after('phone_number');
+            }
+            if (!Schema::hasColumn('orders', 'payment_method')) {
+                $table->string('payment_method')->default('cash_on_delivery')->after('notes');
+            }
         });
     }
 

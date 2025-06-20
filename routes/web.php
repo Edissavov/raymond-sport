@@ -27,3 +27,10 @@ Route::get('/thank-you', ThankYou::class)->name('thank-you');
 Route::get('/about-us', AboutUs::class)->name('about-us');
 Route::get('/terms', Terms::class)->name('terms');
 Route::get('/faq', Faq::class)->name('faq');
+Route::group(['middleware' => ['auth:admin']], function() {
+    // Admin routes
+});
+
+Route::group(['middleware' => ['auth:web']], function() {
+    // User routes
+});
