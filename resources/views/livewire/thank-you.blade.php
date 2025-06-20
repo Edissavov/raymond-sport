@@ -3,12 +3,13 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
     </svg>
 
-    <h1 class="text-2xl font-bold mb-4">Благодарим ви за поръчката!</h1>
+    <h1 class="text-2xl font-bold mb-4">Благодарим ви за поръчката, {{ $order->customer_name }}!</h1>
     <p class="mb-2">Вашата поръчка #{{ $order->id }} е получена успешно.</p>
     <p class="mb-6">Ще ви се обадим на посочения телефонен номер за потвърждение.</p>
 
     <div class="bg-white p-6 rounded-lg shadow-sm text-left max-w-md mx-auto mb-8">
         <h2 class="font-semibold text-lg mb-4 border-b pb-2">Детайли на поръчката:</h2>
+        <p class="mb-2"><strong>Име:</strong> {{ $order->customer_name }}</p>
         <p class="mb-2"><strong>Номер на поръчка:</strong> #{{ $order->id }}</p>
         <p class="mb-2"><strong>Адрес:</strong> {{ $order->shipping_address }}</p>
         <p class="mb-2"><strong>Телефон:</strong> {{ $order->phone_number }}</p>

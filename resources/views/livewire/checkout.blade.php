@@ -7,7 +7,14 @@
         </div>
     @endif
 
+
     <div class="space-y-4">
+        <div>
+            <label for="name" class="block font-medium mb-1">Име и фамилия*</label>
+            <input type="text" id="name" wire:model="customerName"
+                   class="w-full border rounded px-3 py-2">
+            @error('customerName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
         <!-- Shipping Address -->
         <div>
             <label for="shipping" class="block font-medium mb-1">Адрес за доставка*</label>
@@ -59,16 +66,10 @@
         <div x-data="{ loading: false }" class="mt-4 text-right">
             <p class="text-xl font-semibold">Общо: ${{ number_format($total, 2) }}</p>
             <button
-                x-on:click="loading = true"
-                wire:click="placeOrder"
-                wire:loading.attr="disabled"
-                class="mt-4 bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
-                x-bind:disabled="loading">
-                <span x-show="!loading">Поръчай</span>
-                <span x-show="loading">
-                    Зарежда се...
-                </span>
-            </button>
+            wire:click="placeOrder"
+            class="mt-4 bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition">
+            Поръчай
+        </button>
         </div>
     </div>
 </div>

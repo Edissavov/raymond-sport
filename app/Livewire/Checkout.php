@@ -15,6 +15,7 @@ class Checkout extends Component
     public $shippingAddress;
     public $phoneNumber;
     public $deliveryOption;
+    public $customerName; // Add this line
 
     public function mount()
     {
@@ -30,8 +31,9 @@ class Checkout extends Component
     public function placeOrder()
     {
         $this->validate([
+            'customerName' => 'required|min:2', // Add validation
             'shippingAddress' => 'required|min:2',
-            'phoneNumber' => 'required|min:6',
+            'phoneNumber' => 'required|min:10|max:10',
             'deliveryOption' => 'required|in:econt,speedy'
         ]);
 
@@ -39,6 +41,7 @@ class Checkout extends Component
         try {
             $order = Order::create([
                 'user_id' => auth()->id(),
+                'customer_name' => $this->customerName, // Add this line
                 'total_price' => $this->total,
                 'shipping_address' => $this->shippingAddress,
                 'phone_number' => $this->phoneNumber,
@@ -70,6 +73,7 @@ class Checkout extends Component
             session()->flash('error', 'Order failed: '.$e->getMessage());
         }
     }
+
     public function render()
     {
         return view('livewire.checkout');

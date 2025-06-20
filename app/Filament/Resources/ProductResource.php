@@ -54,7 +54,7 @@ class ProductResource extends Resource
                             ->required()
                             ->options(Size::all()->pluck('name','id')),
                         TextInput::make('stock')
-                    ]),
+                    ])->reorderable(),
             ]);
     }
 
@@ -66,7 +66,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('category.name')->sortable(),
                 Tables\Columns\TextColumn::make('price')->money('usd')->sortable(),
-             
+
             ])
             ->filters([
                 //

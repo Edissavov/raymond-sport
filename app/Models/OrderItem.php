@@ -22,4 +22,14 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Size::class);
     }
+    protected static function booted()
+{
+    static::saved(function ($item) {
+        $item->order->updateTotal();
+    });
+
+    static::deleted(function ($item) {
+        $item->order->updateTotal();
+    });
+}
 }

@@ -16,4 +16,10 @@ class EditOrder extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function afterSave(): void
+    {
+        // Update the total price whenever the order is saved
+        $this->record->updateTotal();
+    }
 }

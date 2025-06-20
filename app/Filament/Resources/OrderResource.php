@@ -8,6 +8,7 @@ use App\Filament\Resources\OrderResource\RelationManagers\ItemsRelationManager;
 use App\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -27,22 +28,44 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('customer_name')
+                    ->required()
+                    ->maxLength(255),
+
                 Forms\Components\TextInput::make('user_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('total_price')
-                    ->required()
                     ->numeric()
+                    ->hidden(),
+                Forms\Components\TextInput::make('phone_number')
+                    ->label('Phone number'),
+                Forms\Components\TextInput::make('total_price')
+                    ->numeric()
+                    ->prefix('$')
+                    ->readOnly()
+                    ->dehydrated()
                     ->default(0.00),
-                Forms\Components\TextInput::make('status')
+
+                Select::make('status')
                     ->required()
-                    ->maxLength(255)
-                    ->default('pending'),
-                Forms\Components\Textarea::make('shipping_address')
+                    ->options([
+                        'pending' => 'Pending',
+                        'processing' => 'Processing',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->default('pending')
+                    ->native(false) // Makes it use the nicer UI dropdown
+                    ->selectablePlaceholder(false)
+                    ->live() // Optional: if you want real-time updates
+                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        // Optional: Add any logic that should run when status changes
+                    }),
+                Textarea::make('shipping_address')
                     ->required()
                     ->columnSpanFull(),
+
                 TextInput::make('phone_number')
                     ->required()
-                    ->tel() // Special phone input type
+                    ->tel()
                     ->maxLength(20),
 
                 Radio::make('delivery_option')
@@ -51,11 +74,7 @@ class OrderResource extends Resource
                         'econt' => 'Econt',
                         'speedy' => 'Speedy'
                     ])
-                    ->default('econt')
-                   ,
-
-
-
+                    ->default('econt'),
             ]);
     }
 
@@ -63,28 +82,49 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_price')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->label('Customer')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->label('Phone number')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->label('Total')
+                    ->numeric()
+                    ->sortable()
+                    ->money('usd')
+                    ->color('success')
+                    ->weight('bold'),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'processing' => 'info',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Add any filters you might need
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
