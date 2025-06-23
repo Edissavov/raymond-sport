@@ -34,7 +34,7 @@ return [
     |            "failover", "roundrobin"
     |
     */
-
+    'contact_to' => env('MAIL_CONTACT_TO'),
     'mailers' => [
 
         'smtp' => [
